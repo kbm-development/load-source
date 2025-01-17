@@ -18,7 +18,7 @@ var evaluate = (code) => {
     let value =  vm.runInContext(code, Object.assign(context, { console, module, require, process, __dirname: process.cwd() }));
     return value;
   }catch(err){
-    console.log('error: '+err);
+    console.log('error: ',err);
     return value;
   }
 };
