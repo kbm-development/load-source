@@ -12,14 +12,16 @@ var getCodeBlocks = (markdown) =>  Array.from(markdown.matchAll(/\`\`\`(\w+)((?:
   }, {}));
 });
 
-var evaluate = (code) => {
+var createContext = (global) => vm.createContext(global);
+
+var evaluate = (code, context) => {
   try{
-    var context = vm.createContext(global);
+    var context = createContext(context);
     let value =  vm.runInContext(code, Object.assign(context, { console, module, require, process, __dirname: process.cwd() }));
     return value;
   }catch(err){
     console.log('error: ',err);
-    return value;
+    return null;
   }
 };
 
@@ -35,4 +37,4 @@ var loadCodeJs = (source) => {
   return evaluate(code);
 };
 
-module.exports = { getCodeBlocks, evaluate, loadCodeSource, loadCodeJs };
+module.exports = { getCodeBlocks, evaluate, loadCodeSource, loadCodeJs, createContext };
