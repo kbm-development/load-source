@@ -12,12 +12,10 @@ var getCodeBlocks = (markdown) =>  Array.from(markdown.matchAll(/\`\`\`(\w+)((?:
   }, {}));
 });
 
-var createContext = (global) => vm.createContext(global);
-
 var evaluate = (code, context) => {
   try{
-    var context = createContext(context);
-    let value =  vm.runInContext(code, Object.assign(context, { console, module, require, process, __dirname: process.cwd() }));
+    if(!context) context = vm.createContext(global);
+    let value =  vm.runInContext(code, context);
     return value;
   }catch(err){
     console.log('error: ',err);
@@ -27,14 +25,14 @@ var evaluate = (code, context) => {
 
 var loadCodeSource = (source) => {
   var code = source.map(code => getCodeBlocks(fs.readFileSync(code).toString()).filter(block=> block.eval === '1').reduce((acc, value)=> acc.concat(`\n${value.content}\n`), []).join('\n')).join('\n').trim();
-  return evaluate(code);
+  return code; 
 };
 
-var loadCodeJs = (source) => {
-  if(!isDir(source)) return evaluate(fs.readFileSync(source).toString());
+var loadCodeJs = (source, context) => {
+  if(!isDir(source)) return fs.readFileSync(source).toString();
   let dir = readDir(source).filter(isJs) || [];
   let code = dir.map(file => fs.readFileSync(`${source}/${file}`).toString()).join('\n');
-  return evaluate(code);
+  return code;
 };
 
-module.exports = { getCodeBlocks, evaluate, loadCodeSource, loadCodeJs, createContext };
+module.exports = { loadCodeJs, loadCodeSource, evaluate, getCodeBlocks }
