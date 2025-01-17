@@ -1,0 +1,22 @@
+{
+  "name": "@kbmapp/load-source",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kbm-development/load-source.git"
+  },
+  "keywords": [
+    "source"
+  ],
+  "author": "azizzaeny",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kbm-development/load-source/issues"
+  },
+  "homepage": "https://github.com/kbm-development/load-source#readme",
+  "description": ""
+}
