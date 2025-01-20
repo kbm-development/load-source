@@ -10,16 +10,6 @@ var evaluate =(code, ctx) => {
   }
 };
 
-var runContext = (prefix='./', context) =>{
-  let source = fs.readFileSync(`${prefix}${process.env.CONTEXT}/index.js`, 'utf8');
-  try {
-    return (vm.runInContext(source, vm.createContext(context)), true);
-  }catch(err){
-    console.log(err);
-    return false;
-  }
-};
-
 var isJs =  file => (require('path').extname(file) === '.js');
 var isDir = dirPath => fs.statSync(dirPath).isDirectory();
 var readDir = (dirPath) => fs.readdirSync(dirPath);
@@ -43,4 +33,4 @@ var loadJs = (source, context) => {
   return code;
 };
 
-module.exports = {evaluate, runContext, loadSource, loadJs, getCodeBlocks, vm };
+module.exports = {evaluate, loadSource, loadJs, getCodeBlocks, vm };
