@@ -1,6 +1,25 @@
 var vm = require('vm');
 var fs = require('fs');
 
+var evaluate =(code, ctx) => {
+  try{
+    return (vm.runInContext(code, vm.createContext(ctx)), true);
+  }catch(err){
+    console.log(err);
+    return false;
+  }
+};
+
+var runContext = (prefix='./', context) =>{
+  let source = fs.readFileSync(`${prefix}${process.env.CONTEXT}/index.js`, 'utf8');
+  try {
+    return (vm.runInContext(source, vm.createContext(context)), true);
+  }catch(err){
+    console.log(err);
+    return false;
+  }
+};
+
 var isJs =  file => (require('path').extname(file) === '.js');
 var isDir = dirPath => fs.statSync(dirPath).isDirectory();
 var readDir = (dirPath) => fs.readdirSync(dirPath);
@@ -12,27 +31,16 @@ var getCodeBlocks = (markdown) =>  Array.from(markdown.matchAll(/\`\`\`(\w+)((?:
   }, {}));
 });
 
-var evaluate = (code, context) => {
-  try{
-    if(!context) context = vm.createContext(global);
-    let value =  vm.runInContext(code, context);
-    return value;
-  }catch(err){
-    console.log('error: ',err);
-    return null;
-  }
-};
-
-var loadCodeSource = (source) => {
+var loadSource = (source) => {
   var code = source.map(code => getCodeBlocks(fs.readFileSync(code).toString()).filter(block=> block.eval === '1').reduce((acc, value)=> acc.concat(`\n${value.content}\n`), []).join('\n')).join('\n').trim();
   return code; 
 };
 
-var loadCodeJs = (source, context) => {
+var loadJs = (source, context) => {
   if(!isDir(source)) return fs.readFileSync(source).toString();
   let dir = readDir(source).filter(isJs) || [];
   let code = dir.map(file => fs.readFileSync(`${source}/${file}`).toString()).join('\n');
   return code;
 };
 
-module.exports = { loadCodeJs, loadCodeSource, evaluate, getCodeBlocks }
+module.exports = {evaluate, runContext, loadSource, loadJs, getCodeBlocks, vm };
